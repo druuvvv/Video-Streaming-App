@@ -1,0 +1,26 @@
+{
+  "name": "express_fuckery",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "node server.js",
+    "build": "next build",
+    "start": "nodemon server.js",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "airtable": "^0.11.6",
+    "bcrypt": "^5.1.0",
+    "classnames": "^2.3.2",
+    "express": "^4.18.2",
+    "express-session": "^1.17.3",
+    "framer-motion": "^10.9.2",
+    "next": "13.2.4",
+    "next-auth": "^4.20.1",
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+}
