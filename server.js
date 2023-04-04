@@ -31,21 +31,31 @@ server.prepare().then(()=> {
     app.post("/api/auth/verifyUser" , async (req,res) => {
        const {email} = req.body;
        try{
-        const user = await verifyUser(req,res);
-        if(user.isVerified){
-            req.session.isVerified = true;
-        }
-        else{
-            req.session.isVerified = false;
-            user.message = "Invalid Email or Password!!"
-        }
-        console.log({myUser : user});
+           const user = await verifyUser(req,res);
+           if(user.isVerified){
+               req.session.isVerified = true;
+               req.session.firstname = user.firstname;
+               req.session.lastname = user.lastname;
+               req.session.email = user.email;
+            }
+            else if(!user.message){
+                req.session.isVerified = false;
+                user.message = "Invalid Email or Password!!"
+            }
+            
+
         res.json(user);
     }
         catch(error){
             res.status(400);
             req.session.isVerified = false;
         }
+
+    })
+
+    app.get('/signin' , (req,res,next) => {
+        req.session.isVerified = false;
+        next()
 
     })
 

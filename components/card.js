@@ -29,6 +29,7 @@ const card = (props) => {
             src={imgSrc} 
             alt="Image of the video" 
             layout="fill" 
+            sizes="100vw"
             onError={errorHandler}
             className={styles.cardImg} 
             />

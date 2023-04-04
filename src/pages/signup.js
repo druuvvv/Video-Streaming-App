@@ -29,10 +29,9 @@ const signup = () => {
             })})
 
             const dbUser = await response.json();
-            console.log({dbUser});
             setAlertMessage(dbUser.message)
             if(dbUser.isRegistered){
-              router.push('/signin');
+              router.push('/');
             }
     }
     const handleOnChangeEmail = async (e) => {

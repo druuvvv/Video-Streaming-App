@@ -2,9 +2,10 @@ import styles from '../styles/login.module.css'
 import Head from 'next/head'
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router'
 import { userContext } from './_app';
+
 
 const login = () => {
     const [userMessage , setUserMessage] = useState("");
@@ -12,6 +13,19 @@ const login = () => {
     const [isLoading , setIsLoading] = useState(false);
     const [userEmail , setUserEmail] = useState("");
     const [userPassword , setUserPassword] = useState("");
+
+    useEffect(() => {
+      const handleComplete = () => {
+        setIsLoading(false);
+      };
+      router.events.on("routeChangeComplete", handleComplete);
+      router.events.on("routeChangeError", handleComplete);
+  
+      return () => {
+        router.events.off("routeChangeComplete", handleComplete);
+        router.events.off("routeChangeError", handleComplete);
+      };
+    }, [router]);
   
     const handleLoginWithEmail = async (e) => {
         setIsLoading(true);
@@ -26,26 +40,25 @@ const login = () => {
             password : `${userPassword}`,
           })})
           const user = await response.json();
-          console.log(user);
           if(user.isVerified) {
             setUserMessage("Welcome Back!")
             router.push('/')
           };
-          setIsLoading(false);
           setUserMessage(user.message);
         }
           catch(error){
 
           }
-        
+
+
     }
-    const handleOnChangeEmail = async (e) => {
+    const handleOnChangeEmail =  (e) => {
         const email = e.target.value;
-        await setUserEmail(email);
+        setUserEmail(email);
     }
-    const handleOnChangePassword = async (e) => {
+    const handleOnChangePassword =  (e) => {
         const password = e.target.value;
-        await setUserPassword(password);
+         setUserPassword(password);
     }
     return (
         <div className={styles.container}>

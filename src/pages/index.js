@@ -6,22 +6,21 @@ import Corousel from '../../components/corousel.js'
 import {useContext} from 'react';
 import { getVideos } from '../../lib/videoData.js'
 import { userContext } from './_app.js'
-
-export async function getServerSideProps(){
+export async function getServerSideProps({req}){
   const marvelVideos = await getVideos('marvel%20trailers');
   const dcVideos = await getVideos('dc%20trailers');
   const hotTubVideos = await getVideos('amouranth')
+  const response = await req.session;
+  const user = JSON.stringify(response)
 
   return {
-    props : {marvelVideos, dcVideos , hotTubVideos},
+    props : {marvelVideos, dcVideos , hotTubVideos ,user },
   }
 
 } 
 
-export default function Home({marvelVideos , dcVideos , hotTubVideos}) {
-
-  const {userName , setUserName} = useContext(userContext);
-  
+export default function Home({marvelVideos , dcVideos , hotTubVideos ,user }) {
+  const userjson = JSON.parse(user)
   return (
     <div className={styles.body}>
       <Head>
@@ -30,7 +29,7 @@ export default function Home({marvelVideos , dcVideos , hotTubVideos}) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Navbar username={userName.email || "sample.email"} firstname={userName.firstname || "Dhruv"} lastname={userName.lastname || "Mittal"}/>
+      <Navbar username={userjson.email || "sample.email"} firstname={userjson.firstname || "Dhruv"} lastname={userjson.lastname || "Mittal"}/>
       <Banner title={"Fifty Shades Of Grey"} subTitle={"BDSM is all we want"} imgUrl='/static/grey.jpg'/>
     <div className={styles.sectionWrapper}>
       <Corousel title={"Marvel"} videos={marvelVideos} size="large"/>

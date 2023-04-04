@@ -21,7 +21,7 @@ const Navbar = (props) => {
         <div className={styles.wrapper}>
             <a className={styles.logolink} href="/">
             <div className={styles.logoWrapper}>
-                <Image src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg" width={128} height={34} />
+                <Image src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg" width={128} height={34} alt="Netflix Logo" />
             </div>
             </a>
         
