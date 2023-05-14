@@ -1,34 +1,30 @@
 import '@/styles/globals.css'
 import { Roboto_Slab } from "next/font/google"
-import {createContext} from 'react'
-import {useState , useContext} from 'react'
+import {useState , useEffect } from 'react'
+import Loading from '../../components/loading'
 import {useRouter} from 'next/router'
-export const userContext = createContext();
-export const loginContext = createContext();
-
-const UserProvider = ({children}) => {
-  
-  const [userName , setUserName] = useState("");
-
-  return (
-    <userContext.Provider value={{userName , setUserName}}>
-    {children}
-  </userContext.Provider>
-  )
-}
-
-
-
 const roboto = Roboto_Slab({
   weight: '400',
   subsets: ['latin'],
 })
 
-export default function App({ Component, pageProps }) {
 
+export default function App({ Component, pageProps }) {
+  const [isLoading , setIsLoading] = useState(false);
+  const router = useRouter();
   
-  return (<UserProvider><main className={roboto.className}>
-      <Component {...pageProps} />
-      </main>
-      </UserProvider>)
+  useEffect(() => {
+    const handleComplete = () => {
+      setIsLoading(false);
+    };
+    router.events.on("routeChangeComplete", handleComplete);
+    router.events.on("routeChangeError", handleComplete);
+  
+    return () => {
+      router.events.off("routeChangeComplete", handleComplete);
+      router.events.off("routeChangeError", handleComplete);
+    };
+  }, [router]);
+  return isLoading ? <Loading /> : <main className={roboto.className}><Component {...pageProps} /></main>;
+
 }

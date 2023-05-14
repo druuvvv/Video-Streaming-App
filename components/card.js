@@ -3,9 +3,10 @@ import styles from './card.module.css'
 import { useState } from 'react'
 import { motion } from "framer-motion"
 import cls from 'classnames'
+import Link from 'next/link'
 
 const card = (props) => {
-    const {imgUrl , size = "medium" , id } = props
+    const {imgUrl , size = "medium" , videoId , index } = props
     const [imgSrc , setImgSrc] = useState(imgUrl)
     const classMap = {
         large : styles.lgItem,
@@ -17,14 +18,15 @@ const card = (props) => {
         setImgSrc('/static/backup_image.jpg')
     }
 
-    const scale = id === 0 ? {scaleY : 1.1} : {scale : 1.1}
+    const scale = index === 0 ? {scaleY : 1.1} : {scale : 1.1}
 
     return <div className={styles.container}> 
+            <Link href={`/video/${videoId}`}>
     <motion.div 
         whileHover={{
             ...scale,
           }}
-    className={cls(styles.imgMotionWrapper , classMap[size])}>    
+    className={cls(styles.imgMotionWrapper , classMap[size])}>   
         <Image 
             src={imgSrc} 
             alt="Image of the video" 
@@ -34,6 +36,7 @@ const card = (props) => {
             className={styles.cardImg} 
             />
     </motion.div>
+    </Link> 
     </div>
 }
 

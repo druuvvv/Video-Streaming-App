@@ -1,4 +1,4 @@
-import styles from '../styles/login.module.css'
+import styles from '../styles/signup.module.css'
 import Head from 'next/head'
 import Image from "next/image";
 import Link from "next/link";
@@ -14,8 +14,8 @@ const signup = () => {
     const [userPassword , setUserPassword] = useState("");
     const [alertMessage , setAlertMessage] = useState("")
 
-    const handleLoginWithEmail = async (e) => {
- 
+    const handleSignUpWithEmail = async (e) => {
+      setIsLoading(true);
         const response = await fetch("/api/auth/createUser",{
             method : "POST",
             headers : {
@@ -36,19 +36,19 @@ const signup = () => {
     }
     const handleOnChangeEmail = async (e) => {
         const email = e.target.value;
-        await setUserEmail(email);
+        setUserEmail(email);
     }
     const handleOnChangePassword = async (e) => {
         const password = e.target.value;
-        await setUserPassword(password);
+        setUserPassword(password);
     }
     const handleOnChangeFirstName = async (e) => {
         const firstname = e.target.value;
-        await setUserFirstName(firstname);
+        setUserFirstName(firstname);
     }
     const handleOnChangeLastName = async (e) => {
         const lastname = e.target.value;
-        await setUserLastName(lastname);
+        setUserLastName(lastname);
     }
     return  (
         <div className={styles.container}>
@@ -102,8 +102,8 @@ const signup = () => {
               />
     
               <Link href='/signin' className={styles.userMsg}>{"Already a User? Sign in here"}</Link>
-              <button onClick={handleLoginWithEmail} className={styles.loginBtn}>
-                {"Sign Up"}
+              <button onClick={handleSignUpWithEmail} className={styles.SignUpBtn}>
+                {isLoading?"Loading...":"Sign Up"}
               </button>
               <p className={styles.userMsg}>{alertMessage}</p>
             </div>

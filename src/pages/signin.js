@@ -5,8 +5,8 @@ import Link from "next/link";
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router'
 import { userContext } from './_app';
-
-
+import emailValidate from '../../utils/emailValidate.js'
+import Loading from '../../components/loading';
 const login = () => {
     const [userMessage , setUserMessage] = useState("");
     const router = useRouter();
@@ -14,21 +14,11 @@ const login = () => {
     const [userEmail , setUserEmail] = useState("");
     const [userPassword , setUserPassword] = useState("");
 
-    useEffect(() => {
-      const handleComplete = () => {
-        setIsLoading(false);
-      };
-      router.events.on("routeChangeComplete", handleComplete);
-      router.events.on("routeChangeError", handleComplete);
-  
-      return () => {
-        router.events.off("routeChangeComplete", handleComplete);
-        router.events.off("routeChangeError", handleComplete);
-      };
-    }, [router]);
-  
     const handleLoginWithEmail = async (e) => {
-        setIsLoading(true);
+      e.preventDefault(); 
+      const invalidEmail = emailValidate(userEmail);
+      if(!invalidEmail){
+      setIsLoading(true);
         try{
         const response = await fetch("/api/auth/verifyUser",{
           method : "POST",
@@ -43,14 +33,21 @@ const login = () => {
           if(user.isVerified) {
             setUserMessage("Welcome Back!")
             router.push('/')
-          };
-          setUserMessage(user.message);
+          }
+          else{
+            setIsLoading(false);
+            setUserMessage(user.message);
+          }
         }
           catch(error){
-
+            setUserMessage("Something went wrong please try again later");
+            console.error("Something went wrong :(" , error);
           }
 
-
+        }else{
+          setUserMessage(invalidEmail);
+        }
+        
     }
     const handleOnChangeEmail =  (e) => {
         const email = e.target.value;
@@ -82,7 +79,7 @@ const login = () => {
             </div>
           </header>
     
-          <main className={styles.main}>
+          <form className={styles.main}>
             <div className={styles.mainWrapper}>
               <h1 className={styles.signinHeader}>{"Sign In"}</h1>
     
@@ -106,7 +103,7 @@ const login = () => {
               {userMessage && <p href="/signup" className={styles.userMsg}>{userMessage}</p>}
 
             </div>
-          </main>
+          </form>
         </div>
       );
 }

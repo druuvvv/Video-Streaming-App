@@ -6,11 +6,12 @@ const corousel = (props) => {
    if(videos.length) return (<section className={styles.container}>
         <h2 className={styles.title}>{title}</h2>
         <div className={styles.cardWrapper}>
-        {videos.map((video,idx) => {
-            return <Card id={idx} imgUrl={video.thumbnail.url} size={size}/>
+        {videos.map((video) => {
+            return <Card imgUrl={video.thumbnail.url} size={size} videoId={video.videoId} index={video.index}/>
         })}
         </div>
     </section>)
+    
 }
 
 export default corousel;

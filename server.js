@@ -16,13 +16,14 @@ server.prepare().then(()=> {
     app.use(express.urlencoded({extended : true}));
     app.use(session({secret : "TOP SECRET HAI JI" , resave : false , saveUninitialized : false}))
 
-    app.get('/' , (req,res) => {
+    app.get('/' , (req,res ,next) => {
         if(req.session.isVerified){
             return handle(req,res);
         }
         else{
             res.redirect('/signin');
         }
+        next();
     }
     )
     app.post("/api/auth/createUser" , (req,res) => {
