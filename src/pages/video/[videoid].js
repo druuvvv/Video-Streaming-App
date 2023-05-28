@@ -27,10 +27,19 @@ export async function getStaticPaths() {
 
 const Video =  ({ video }) => {
   const router = useRouter();
+  if(video === {}){
+    return <div>
+      <Navbar username={"sample.email"} firstname="Dhruv" lastname="Mittal"/>
+
+      <h1>{video.error}</h1>
+    </div>
+  }
+    else{
     const {title , description  , publishedAt} = video.snippet;
     const {channelTitle} = video;
     const {viewCount} = video.statistics;
-    return <div className={styles.container}>    
+    return <div className={styles.container}>   
+        <Navbar username={"sample.email"} firstname="Dhruv" lastname="Mittal"/>
         <Modal
         isOpen={true}
         contentLabel="Watch this Video"
@@ -67,7 +76,7 @@ const Video =  ({ video }) => {
           </div>
         </div>
       </Modal>
-    </div>
+    </div>}
 
 
 }

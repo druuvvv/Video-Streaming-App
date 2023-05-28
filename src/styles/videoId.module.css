@@ -76,6 +76,10 @@
   margin-bottom: 0.5rem /* 8px */;
   margin-top: 0.75rem /* 12px */;
 }
+.logoWrapper {
+  color: var(--red);
+  width: 8rem /* 128px */;
+}
 
 .col2 {
   color: var(--white10);

@@ -3,7 +3,6 @@ const verifyUser = require('./api/verifyUser.js')
 const session = require('express-session')
 const next = require('next');
 const dev = process.env.NODE_ENV !== 'production';
-
 const server = next({ dev })
 const handle = server.getRequestHandler();
 
@@ -16,7 +15,17 @@ server.prepare().then(()=> {
     app.use(express.urlencoded({extended : true}));
     app.use(session({secret : "TOP SECRET HAI JI" , resave : false , saveUninitialized : false}))
 
-    app.get('/' , (req,res ,next) => {
+    app.get('/', (req,res ,next) => {
+        if(req.session.isVerified){
+            return handle(req,res);
+        }
+        else{
+            res.redirect('/signin');
+        }
+        next();
+    }
+    )
+    app.get('/video/*', (req,res ,next) => {
         if(req.session.isVerified){
             return handle(req,res);
         }
