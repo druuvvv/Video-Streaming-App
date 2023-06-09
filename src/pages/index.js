@@ -21,7 +21,7 @@ export async function getServerSideProps({req}){
 
 export default function Home({marvelVideos , dcVideos , starWarsVideos ,user }) {
   const userjson = JSON.parse(user)
-  console.log(marvelVideos);
+  console.log({userjson});
   return (
     <div className={styles.body}>
       <Head>

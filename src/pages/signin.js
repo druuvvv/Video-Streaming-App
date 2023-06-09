@@ -30,6 +30,7 @@ const login = () => {
             password : `${userPassword}`,
           })})
           const user = await response.json();
+          console.log(user);
           if(user.isVerified) {
             setUserMessage("Welcome Back!")
             router.push('/')

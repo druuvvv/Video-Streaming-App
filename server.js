@@ -35,14 +35,19 @@ server.prepare().then(()=> {
         next();
     }
     )
-    app.post("/api/auth/createUser" , (req,res) => {
-        createUser(req,res)
+    app.post("/api/auth/createUser" ,async  (req,res) => {
+        const response = await createUser(req,res)
+        req.session.firstname = response._doc.firstname;
+        req.session.lastname = response._doc.lastname;
+        req.session.email = response._doc.email;
+        res.json(response);
     })
     app.post("/api/auth/verifyUser" , async (req,res) => {
        const {email} = req.body;
        try{
            const user = await verifyUser(req,res);
            if(user.isVerified){
+            console.log({user})
                req.session.isVerified = true;
                req.session.firstname = user.firstname;
                req.session.lastname = user.lastname;
@@ -71,7 +76,7 @@ server.prepare().then(()=> {
 
     app.get('/signout' , (req,res,next) => {
         req.session.isVerified = false;
-        res.redirect('/signin');
+        res.redirect('/signin')
     })
 
     app.get('/secret' , (req,res) => {

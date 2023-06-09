@@ -1,24 +1,27 @@
-const {getUserRecords , getRecords , table } = require('../lib/airtable.js')
+const {getUserRecords , table } = require('../lib/airtable.js')
+const {getRecords} = require('../database/mongoose.js');
 const bcrypt = require('bcrypt');
 
 module.exports = async function verifyUser(req,res){
     try{
     const {email , password } = req.body;
-    const userRecords = await getUserRecords(email);
-    console.log(userRecords)
-    if(userRecords.length > 0){
-    const isValid = await bcrypt.compare(password , userRecords[0].hashcode);
-    if(isValid){
-        userRecords[0].isVerified = true
-    }
-    else{
-        userRecords[0].isVerified = false
-    } }
-    else{
-        userRecords[0] = {};
-        userRecords[0].message = "Invalid Email or Password"
-    }
-    return(userRecords[0]);
+    const Record = await getRecords(email);
+    const userRecord = {firstname : Record.firstname , lastname : Record.lastname , email : Record.email , hashcode : Record.hashcode}
+    if(userRecord){
+        const isValid = await bcrypt.compare(password , userRecord.hashcode);
+        console.log(isValid);
+        if(isValid){
+            userRecord['isVerified'] = true;
+        }
+        else{
+            userRecord['isVerified'] = false;
+        } }
+        else{
+            userRecord = {};
+            userRecord['message'] = "Invalid Email or Password"
+        }
+        console.log({userRecord})
+        return(userRecord);
 }   
     catch(error){
         res.status(400);
