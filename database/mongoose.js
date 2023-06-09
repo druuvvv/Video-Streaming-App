@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
-mongoose.connect('mongodb://Dhruv:druvvv@oracle.anu.ninja/Netflix')
+require('dotenv').config()
+const mongooseURL = process.env.MONGOOSE_URL
+mongoose.connect(mongooseURL)
 .then(() => {
     console.log("Success...")
 })

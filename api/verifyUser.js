@@ -1,4 +1,3 @@
-const {getUserRecords , table } = require('../lib/airtable.js')
 const {getRecords} = require('../database/mongoose.js');
 const bcrypt = require('bcrypt');
 

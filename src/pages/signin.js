@@ -2,11 +2,10 @@ import styles from '../styles/login.module.css'
 import Head from 'next/head'
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useEffect } from 'react';
+import { useState} from 'react';
 import { useRouter } from 'next/router'
-import { userContext } from './_app';
 import emailValidate from '../../utils/emailValidate.js'
-import Loading from '../../components/loading';
+
 const login = () => {
     const [userMessage , setUserMessage] = useState("");
     const router = useRouter();

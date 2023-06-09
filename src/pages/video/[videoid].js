@@ -4,32 +4,37 @@ import styles from "../../styles/videoId.module.css"
 import cls from "classnames"
 import { getVideoById } from "../../../lib/videoData";
 import Navbar from "../../../components/navbar";
-Modal.setAppElement('#__next');
+import Like from "../../../components/icons/like-icon";
+import DisLike from "../../../components/icons/dislike-icon";
 
-export const getStaticProps = async (staticProps) => {
-  const params = staticProps.params;
-  const video = await getVideoById(params.videoid);
-  console.log(video);
+Modal.setAppElement('#__next');
+export async function getServerSideProps({req}){
+  const response = await req.session;
+  const user = JSON.stringify(response)
+  console.log("hemlo" , req.query);
+  const videoid = await req.query.videoid;
+  const video = await getVideoById(videoid)
+  console.log({video})
   return {
-    props: {
-      video,
-    },
-    revalidate: 10
+    props : { user , video },
   }
 }
+const Video =  ({ video , user }) => {
+  console.log({video});
 
-export async function getStaticPaths() {
-  return {
-    paths: [{ params: { videoid : 'Znsa4Deavgg'}}],
-    fallback: 'blocking', 
-  };
-}
-
-const Video =  ({ video }) => {
+  const userjson = JSON.parse(user)
   const router = useRouter();
+  const handleToggleDislike = async () => {
+
+  };
+
+  const handleToggleLike = async () => {
+
+  };
+
   if(video === {}){
     return <div>
-      <Navbar username={"sample.email"} firstname="Dhruv" lastname="Mittal"/>
+      <Navbar username={userjson.email} firstname={userjson.firstname} lastname={userjson.lastname}/>
 
       <h1>{video.error}</h1>
     </div>
@@ -39,7 +44,7 @@ const Video =  ({ video }) => {
     const {channelTitle} = video;
     const {viewCount} = video.statistics;
     return <div className={styles.container}>   
-        <Navbar username={"sample.email"} firstname="Dhruv" lastname="Mittal"/>
+        <Navbar username={userjson.email} firstname={userjson.firstname} lastname={userjson.lastname}/>
         <Modal
         isOpen={true}
         contentLabel="Watch this Video"
@@ -55,7 +60,20 @@ const Video =  ({ video }) => {
         height="360"
         src={`https://www.youtube.com/embed/${router.query.videoid}?autoplay=0&origin=http://example.com&controls=0&rel=1`}
         frameborder="0"></iframe>
-
+        <div className={styles.likeDislikeBtnWrapper}>
+          <div className={styles.likeBtnWrapper}>
+            <button onClick={handleToggleLike}>
+              <div className={styles.btnWrapper}>
+                <Like />
+              </div>
+            </button>
+          </div>
+          <button onClick={handleToggleDislike}>
+            <div className={styles.btnWrapper}>
+              <DisLike />
+            </div>
+          </button>
+        </div>
         <div className={styles.modalBody}>
           <div className={styles.modalBodyContent}>
             <div className={styles.col1}>

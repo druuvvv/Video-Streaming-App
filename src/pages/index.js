@@ -3,16 +3,14 @@ import styles from '@/styles/Home.module.css'
 import Banner from '../../components/banner.js'
 import Navbar from '../../components/navbar.js'
 import Corousel from '../../components/corousel.js'
-import {useContext} from 'react';
 import { getVideos } from '../../lib/videoData.js'
-import { userContext } from './_app.js'
 export async function getServerSideProps({req}){
   const marvelVideos = await getVideos('marvel%20trailers');
   const dcVideos = await getVideos('dc%20trailers');
   const starWarsVideos = await getVideos('star%20wars')
   const response = await req.session;
   const user = JSON.stringify(response)
-
+  
   return {
     props : {marvelVideos, dcVideos , starWarsVideos ,user },
   }
@@ -22,6 +20,7 @@ export async function getServerSideProps({req}){
 export default function Home({marvelVideos , dcVideos , starWarsVideos ,user }) {
   const userjson = JSON.parse(user)
   console.log({userjson});
+  console.log(marvelVideos , dcVideos , starWarsVideos);
   return (
     <div className={styles.body}>
       <Head>

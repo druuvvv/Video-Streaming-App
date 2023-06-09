@@ -68,6 +68,11 @@ server.prepare().then(()=> {
 
     })
 
+    app.get('/api/userDetails' , async (req,res) => {
+        console.log(req.session);
+        res.json(req.session);
+    })
+
     app.get('/signin' , (req,res,next) => {
         req.session.isVerified = false;
         next()
