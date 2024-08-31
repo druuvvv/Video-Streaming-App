@@ -37,7 +37,7 @@ jobs:
       run: docker push druvvv/my-node-app
   deploy:
     runs-on: ubuntu-latest
-    needs: build-and-push
+    needs: build
 
     steps:
     - name: Checkout code
