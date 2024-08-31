@@ -37,6 +37,7 @@ server.prepare().then(()=> {
     )
     app.post("/api/auth/createUser" ,async  (req,res) => {
         const response = await createUser(req,res)
+        console.log(response);
         req.session.firstname = response._doc.firstname;
         req.session.lastname = response._doc.lastname;
         req.session.email = response._doc.email;
