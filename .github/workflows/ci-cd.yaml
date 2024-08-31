@@ -73,5 +73,5 @@ jobs:
           sudo docker rm video-streaming-app || true
           
           # Run the new container
-          sudo docker run -d --name your-container-name -p 80:80 your-dockerhub-username/your-image-name:latest
+          sudo docker run -d --name video-streaming-app -p 80:80 ${{ secrets.EC2_USER }}/video-streaming-app-app:latest
         EOF
