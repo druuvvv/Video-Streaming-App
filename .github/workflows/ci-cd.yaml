@@ -35,6 +35,7 @@ jobs:
 
     - name: Push Docker image
       run: docker push druvvv/my-node-app
+
   deploy:
     runs-on: ubuntu-latest
     needs: build
@@ -59,14 +60,14 @@ jobs:
           sudo systemctl start docker
 
           # Stop any running containers if they exist
-          docker stop druvvv/my-node-app || true
-          docker rm druvvv/my-node-app || true
+          docker stop my-node-app || true
+          docker rm my-node-app || true
           
           # Pull the latest image from Docker Hub
-          docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/druvvv/my-node-app:latest
+          docker pull druvvv/my-node-app:latest
           
-          # Run the new container
-          docker run -d --name druvvv/my-node-app -p 3000:3000 ${{ secrets.DOCKER_HUB_USERNAME }}/druvvv/my-node-app:latest
+          # Run the new container with the correct name and port mapping
+          docker run -d --name my-node-app -p 3000:3000 druvvv/my-node-app:latest
         EOF
 
     - name: Clean up
