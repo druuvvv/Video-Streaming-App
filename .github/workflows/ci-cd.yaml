@@ -69,8 +69,8 @@ jobs:
           sudo docker pull ${{ secrets.EC2_USER }}/video-streaming-app-app:latest
           
           # Stop and remove any existing containers (adjust container names as needed)
-          sudo docker stop your-container-name || true
-          sudo docker rm your-container-name || true
+          sudo docker stop video-streaming-app || true
+          sudo docker rm video-streaming-app || true
           
           # Run the new container
           sudo docker run -d --name your-container-name -p 80:80 your-dockerhub-username/your-image-name:latest
