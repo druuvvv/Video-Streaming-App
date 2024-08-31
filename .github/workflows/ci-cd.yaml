@@ -34,4 +34,4 @@ jobs:
         password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
     - name: Push Docker image
-      run: docker push my-node-app
+      run: docker push druvvv/my-node-app
