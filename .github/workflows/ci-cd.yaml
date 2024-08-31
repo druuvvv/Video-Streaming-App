@@ -65,10 +65,13 @@ jobs:
         echo "$SSH_PRIVATE_KEY" > private_key.pem
         chmod 600 private_key.pem
         ssh -i private_key.pem -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST << EOF
-          sudo docker-compose pull
-          sudo docker-compose down
-          sudo docker-compose up -d
+          # Pull the latest images
+          sudo docker pull ${{ secrets.EC2_USER }}/video-streaming-app-app:latest
+          
+          # Stop and remove any existing containers (adjust container names as needed)
+          sudo docker stop your-container-name || true
+          sudo docker rm your-container-name || true
+          
+          # Run the new container
+          sudo docker run -d --name your-container-name -p 80:80 your-dockerhub-username/your-image-name:latest
         EOF
-
-    - name: Clean up
-      run: rm -f private_key.pem
