@@ -35,3 +35,39 @@ jobs:
 
     - name: Push Docker image
       run: docker push druvvv/my-node-app
+deploy:
+    runs-on: ubuntu-latest
+    needs: build-and-push
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Deploy to EC2
+      env:
+        EC2_HOST: ${{ secrets.EC2_HOST }}
+        EC2_USER: ${{ secrets.EC2_USER }}
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      run: |
+        # Save the SSH private key to a file
+        echo "$SSH_PRIVATE_KEY" > private_key.pem
+        chmod 600 private_key.pem
+        
+        # Deploy via SSH
+        ssh -i private_key.pem -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST << EOF
+          # Start Docker service if not already running
+          sudo systemctl start docker
+
+          # Stop any running containers if they exist
+          docker stop druvvv/my-node-app || true
+          docker rm druvvv/my-node-app || true
+          
+          # Pull the latest image from Docker Hub
+          docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/druvvv/my-node-app:latest
+          
+          # Run the new container
+          docker run -d --name druvvv/my-node-app -p 3000:3000 ${{ secrets.DOCKER_HUB_USERNAME }}/druvvv/my-node-app:latest
+        EOF
+
+    - name: Clean up
+      run: rm -f private_key.pem
