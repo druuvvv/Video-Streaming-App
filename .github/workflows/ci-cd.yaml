@@ -24,8 +24,8 @@ jobs:
     - name: Install dependencies
       run: npm install
 
-    - name: Build Docker image
-      run: docker build -t druvvv/my-node-app .
+    - name: Build Docker images
+      run: docker-compose build
 
     - name: Login to Docker Hub
       uses: docker/login-action@v2
@@ -33,8 +33,10 @@ jobs:
         username: ${{ secrets.DOCKER_HUB_USERNAME }}
         password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-    - name: Push Docker image
-      run: docker push druvvv/my-node-app
+    - name: Push Docker images
+      run: |
+        # Push the Docker images to Docker Hub
+        docker-compose push
 
   deploy:
     runs-on: ubuntu-latest
@@ -59,15 +61,14 @@ jobs:
           # Start Docker service if not already running
           sudo systemctl start docker
 
-          # Stop any running containers if they exist
-          docker stop my-node-app || true
-          docker rm my-node-app || true
+          # Pull the latest images from Docker Hub
+          docker-compose pull
           
-          # Pull the latest image from Docker Hub
-          docker pull druvvv/my-node-app:latest
-          
-          # Run the new container with the correct name and port mapping
-          docker run -d --name my-node-app -p 3000:3000 druvvv/my-node-app:latest
+          # Stop and remove any existing containers
+          docker-compose down
+
+          # Run the updated containers
+          docker-compose up -d
         EOF
 
     - name: Clean up
