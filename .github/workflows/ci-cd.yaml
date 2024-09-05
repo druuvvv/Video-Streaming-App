@@ -61,9 +61,6 @@ jobs:
           echo "$SSH_PRIVATE_KEY" > private_key.pem
           chmod 600 private_key.pem
           
-          # Copy docker-compose.yml from the checked-out branch to the EC2 instance
-          scp -i private_key.pem -o StrictHostKeyChecking=no ./docker-compose.yml $EC2_USER@$EC2_HOST:/home/$EC2_USER/docker-compose.yml
-
           # Connect to the EC2 instance and deploy with Docker Compose
           ssh -i private_key.pem -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST << EOF
 

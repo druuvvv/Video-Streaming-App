@@ -50,9 +50,9 @@ server.prepare().then(()=> {
            if(user.isVerified){
             console.log({user})
                req.session.isVerified = true;
-               req.session.firstname = user.firstname;
-               req.session.lastname = user.lastname;
-               req.session.email = user.email;
+               req.session.firstname = user._doc.firstname;
+               req.session.lastname = user._doc.lastname;
+               req.session.email = user._doc.email;
             }
             else if(!user.message){
                 req.session.isVerified = false;
