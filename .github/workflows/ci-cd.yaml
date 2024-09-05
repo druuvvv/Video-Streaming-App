@@ -3,7 +3,7 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - master  # Trigger the workflow on push to the master branch
+      - '*'  # Trigger the workflow on push to the master branch
   pull_request:
     branches:
       - master
@@ -52,9 +52,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-        with:
-          ref: master  # Change this to your desired branch if needed
-
       - name: Deploy to EC2
         env:
           EC2_HOST: ${{ secrets.EC2_HOST }}
@@ -69,7 +66,7 @@ jobs:
 
           # Connect to the EC2 instance and deploy with Docker Compose
           ssh -i private_key.pem -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST << EOF
-          
+
             # Navigate to the location of the docker-compose.yml file
             cd /home/$EC2_USER
 
