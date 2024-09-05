@@ -5,7 +5,8 @@ FROM node:22.6.0-alpine
 WORKDIR /usr/src/app
 
 # Copy package.json and package-lock.json
-COPY package.json package-lock.json ./
+COPY package.json .
+COPY package-lock.json .
 
 # Install dependencies
 RUN npm install
@@ -15,9 +16,6 @@ COPY . .
 
 # Build the Next.js application
 RUN npm run build
-
-# Debugging: list contents of .next directory
-RUN ls -la .next
 
 # Expose the application port
 EXPOSE 3000

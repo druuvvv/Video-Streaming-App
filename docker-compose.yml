@@ -1,26 +1,23 @@
 version: '3.8'
 
 services:
-  app:
+  webapp:
     build:
       context: .
       dockerfile: Dockerfile
+    image: druvvv/video-streaming-application:latest  # Add this line
     container_name: video-streaming-application
     ports:
       - "3000:3000"
     environment:
       - MONGO_URI=mongodb://mongo:27017/User
-    volumes:
-      - .:/usr/src/app
-    command: npm start
     depends_on:
       - mongo
+
 
   mongo:
     image: mongo:latest
     container_name: mongo
-    ports:
-      - "27017:27017"
     volumes:
       - mongo_data:/data/db
 

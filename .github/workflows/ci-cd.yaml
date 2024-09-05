@@ -44,34 +44,39 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
       - name: Push Docker images
-        run: |
-          # Push the Docker images to Docker Hub
-          docker-compose push
+        run: docker-compose push
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: master  # Change this to your desired branch if needed
 
-    - name: Deploy to EC2
-      env:
-        EC2_HOST: ${{ secrets.EC2_HOST }}
-        EC2_USER: ${{ secrets.EC2_USER }}
-        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-      run: |
-        echo "$SSH_PRIVATE_KEY" > private_key.pem
-        chmod 600 private_key.pem
-        ssh -i private_key.pem -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST << EOF
-          # Pull the latest images
-          sudo docker pull ${{ secrets.EC2_USER }}/video-streaming-app-app:latest
+      - name: Deploy to EC2
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          echo "$SSH_PRIVATE_KEY" > private_key.pem
+          chmod 600 private_key.pem
           
-          # Stop and remove any existing containers (adjust container names as needed)
-          sudo docker stop video-streaming-app || true
-          sudo docker rm video-streaming-app || true
+          # Copy docker-compose.yml from the checked-out branch to the EC2 instance
+          scp -i private_key.pem -o StrictHostKeyChecking=no ./docker-compose.yml $EC2_USER@$EC2_HOST:/home/$EC2_USER/docker-compose.yml
+
+          # Connect to the EC2 instance and deploy with Docker Compose
+          ssh -i private_key.pem -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST << EOF
           
-          # Run the new container
-          sudo docker run -d --name video-streaming-app -p 80:80 ${{ secrets.EC2_USER }}/video-streaming-app-app:latest
-        EOF
+            # Navigate to the location of the docker-compose.yml file
+            cd /home/$EC2_USER
+
+            # Pull the latest images using Docker Compose
+            sudo docker-compose pull
+
+            # Recreate the services
+            sudo docker-compose down
+            sudo docker-compose up -d
+          EOF
