@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  webapp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: druvvv/video-streaming-application:latest  # Add this line
+    container_name: video-streaming-application
+    ports:
+      - "3000:3000"
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/User
+      - YOUTUBE_APIKEY=AIzaSyBRXZrZVLDtzMIAu_oxBpRwlBFySgKaag0
+    depends_on:
+      - mongo
+
+
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:

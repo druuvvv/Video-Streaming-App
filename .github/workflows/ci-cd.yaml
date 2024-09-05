@@ -3,7 +3,7 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - master  # Trigger the workflow on push to the master branch
+      - '*'  # Trigger the workflow on push to the master branch
   pull_request:
     branches:
       - master
@@ -12,64 +12,66 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '22.6.0'
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v2
 
-    - name: Install dependencies
-      run: npm install
+      - name: Install Docker Compose
+        run: |
+          sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
 
-    - name: Build Docker image
-      run: docker build -t druvvv/my-node-app .
+      - name: Verify Docker Compose installation
+        run: docker-compose --version
 
-    - name: Login to Docker Hub
-      uses: docker/login-action@v2
-      with:
-        username: ${{ secrets.DOCKER_HUB_USERNAME }}
-        password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '22.6.0'
 
-    - name: Push Docker image
-      run: docker push druvvv/my-node-app
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Docker images
+        run: docker-compose build
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+      - name: Push Docker images
+        run: docker-compose push
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
-    - name: Deploy to EC2
-      env:
-        EC2_HOST: ${{ secrets.EC2_HOST }}
-        EC2_USER: ${{ secrets.EC2_USER }}
-        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-      run: |
-        # Save the SSH private key to a file
-        echo "$SSH_PRIVATE_KEY" > private_key.pem
-        chmod 600 private_key.pem
-        
-        # Deploy via SSH
-        ssh -i private_key.pem -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST << EOF
-          # Start Docker service if not already running
-          sudo systemctl start docker
-
-          # Stop any running containers if they exist
-          docker stop my-node-app || true
-          docker rm my-node-app || true
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Deploy to EC2
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          echo "$SSH_PRIVATE_KEY" > private_key.pem
+          chmod 600 private_key.pem
           
-          # Pull the latest image from Docker Hub
-          docker pull druvvv/my-node-app:latest
-          
-          # Run the new container with the correct name and port mapping
-          docker run -d --name my-node-app -p 3000:3000 druvvv/my-node-app:latest
-        EOF
+          # Connect to the EC2 instance and deploy with Docker Compose
+          ssh -i private_key.pem -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST << EOF
 
-    - name: Clean up
-      run: rm -f private_key.pem
+            # Navigate to the location of the docker-compose.yml file
+            cd /home/$EC2_USER
+
+            # Pull the latest images using Docker Compose
+            sudo docker-compose pull
+
+            # Recreate the services
+            sudo docker-compose down
+            sudo docker-compose up -d
+          EOF
