@@ -3,7 +3,7 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - '*'  # Trigger the workflow on push to the master branch
+      - master  # Trigger the workflow on push to the master branch
   pull_request:
     branches:
       - master
