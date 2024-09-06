@@ -11,7 +11,7 @@ services:
       - "3000:3000"
     environment:
       - MONGO_URI=mongodb://mongo:27017/User
-      - YOUTUBE_APIKEY=AIzaSyBRXZrZVLDtzMIAu_oxBpRwlBFySgKaag0
+      - YOUTUBE_APIKEY=<ENTER_YOUR_API_KEY_HERE>
     depends_on:
       - mongo
 
